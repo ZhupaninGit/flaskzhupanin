@@ -1,7 +1,4 @@
 import socket
-import time
-
-
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 serveraddress = ('localhost', 33333)
@@ -13,14 +10,21 @@ print('Server waiting for the clients...')
 clientsocket, addr = serversocket.accept()
 
 print('Connection from :  {}'.format(addr))
-clientsocket.send('Enter your sentence : '.encode('utf-8'))
+data = ""
+clientsocket.send('Enter your sentence (enter `stop` if you want stop conservation): '.encode('utf-8'))
 data = clientsocket.recv(1024)
-time.sleep(5)
-if clientsocket.send(data) == len(data):
-    print(f"Sent back: {data.decode()}")
-else:
-    print("Sent error.")
+while True:
+    sent = clientsocket.send(data)
+    if sent == len(data):
+        print(f"Sent back: {data.decode()}")
+    else:
+        print("Sent Error!")
+    clientsocket.send('Enter your sentence (enter `stop` if you want stop conservation): '.encode('utf-8'))
+    data = clientsocket.recv(1024)
+    if data.decode() == "stop":
+        break
 
-
+print("End of work...")
 clientsocket.close()
 serversocket.close()
+
