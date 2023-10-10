@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Programming task</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<body>
+<div>
+    <center>
+        <h2>Опитування</h2>
+        <form method="post" action="/cgi-bin/form_handler.py">
+            <label for="username">Введи своє ім'я : </label><br>
+            <input type="text" id="username" name="username"><br>
+
+            <label for="language">Введи свою улюблену мову програмування : </label><br>
+            <input type="text" id="language" name="language"><br>
+
+            <h4>Якій мові програмування з двох наведених ти надаш перевагу для парсингу інформації з сайту? </h4>
+            <input type="radio" name="language_radio" value="C++">C++<br>
+            <input type="radio" name="language_radio" value="Python">Python<br>
+            <input type="radio" name="language_radio" value="іншу" checked>Іншу<br>
+
+
+            <h4>З якою мовою програмування ти працював?</h4>
+            <input type="checkbox" name="language_check" value="Python" checked> Python<br>
+            <input type="checkbox" name="language_check" value="JavaScript"> JavaScript<br>
+            <input type="checkbox" name="language_check" value="Java"> Java<br>
+            <input type="checkbox" name="language_check" value="C++"> C++<br>
+            <input type="checkbox" name="language_check" value="з іншою"> Іншою<br>
+            <input type="checkbox" name="language_check" value="не працював з ніякою"> Не працював з ніякою<br>
+
+
+
+            <input class="buttonclass" type="submit" value="Відправити">
+        </form>
+    </center>
+</div>
+
+</body>
+</html>
