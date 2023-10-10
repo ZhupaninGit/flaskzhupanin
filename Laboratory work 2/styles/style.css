@@ -72,7 +72,10 @@ input[type=text], select {
   box-sizing: border-box;
 }
 
-
+a{
+    text-decoration: none;
+    color: #2ba8fb;
+}
 div {
   border-radius: 5px;
   background-color: #f2f2f2;
