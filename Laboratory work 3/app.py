@@ -55,22 +55,35 @@ def projects():
 @app.route('/skills/')
 @app.route('/skills/<int:id>')
 def skills(id=None):
+    us_ag = request.headers.get('User-Agent')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if id is not None:
         if id >= 0 and id < len(my_skills):
             skill = my_skills[id]
             return render_template('skills.html', skills=f"Навичка {id + 1}: {skill}",aboutactive="",
                            projectsactive="",
                            contactsactive="",
-                           skillsactive="active",)
+                           skillsactive="active",
+                           title="Skills",
+                           os=os_info,
+                           datetime=current_time,
+                           user_agent=us_ag)
         else:
             return render_template('skills.html', skills="Невірний ідентифікатор навички.",aboutactive="",
                            projectsactive="",
                            contactsactive="",
-                           skillsactive="active",)
+                           skillsactive="active",title="Skills",
+                            os=os_info,
+                            datetime=current_time,
+                            user_agent=us_ag)
     else:
         return render_template('skills.html', skills=my_skills, aboutactive="",
                            projectsactive="",
                            contactsactive="",
-                           skillsactive="active",)
+                           skillsactive="active",
+                            title="Skills",
+                            os=os_info,
+                            datetime=current_time,
+                            user_agent=us_ag)
 if __name__ == '__main__':
     app.run(debug=True)
