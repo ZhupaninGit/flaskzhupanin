@@ -1,0 +1,19 @@
+
+{%extends "index.html" %}
+{%block content%}
+<center>
+<h1>Мої навички</h1>
+
+        {% if skills is string %}
+        <p>{{skills}}</p>
+        {% else %}
+        <ol>
+        {% for skill in skills %}
+        <li>{{ skill }}</li>
+        {% endfor %}
+        </ol>
+        <p>Загальна кількість навичок: {{ skills|length }}</p>
+{% endif %}
+</center>
+
+{% endblock %}
