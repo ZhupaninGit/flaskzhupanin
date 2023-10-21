@@ -14,10 +14,7 @@ def info():
     us_ag = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template("info.html",
-                           aboutactive="active",
-                           projectsactive="",
-                           skillsactive="",
-                           contactsactive="",
+                           active="Про нас",
                            title="About Us",
                            os=os_info,
                            datetime=current_time,
@@ -28,10 +25,7 @@ def contacts():
     us_ag = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template("contacts.html",
-                           aboutactive="",
-                           projectsactive="",
-                           contactsactive="active",
-                           skillsactive="",
+                           active="Контакти",
                            title="Contacts",
                            os=os_info,
                            datetime=current_time,
@@ -42,10 +36,7 @@ def projects():
     us_ag = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template("projects.html",
-                           aboutactive="",
-                           projectsactive="active",
-                           contactsactive="",
-                           skillsactive="",
+                           active="Проекти",
                            title="Projects",
                            os=os_info,
                            datetime=current_time,
@@ -60,27 +51,22 @@ def skills(id=None):
     if id is not None:
         if id >= 0 and id < len(my_skills):
             skill = my_skills[id]
-            return render_template('skills.html', skills=f"Навичка {id + 1}: {skill}",aboutactive="",
-                           projectsactive="",
-                           contactsactive="",
-                           skillsactive="active",
+            return render_template('skills.html', skills=f"Навичка {id + 1}: {skill}",
+                           active="Skills",
                            title="Skills",
                            os=os_info,
                            datetime=current_time,
                            user_agent=us_ag)
         else:
-            return render_template('skills.html', skills="Невірний ідентифікатор навички.",aboutactive="",
-                           projectsactive="",
-                           contactsactive="",
-                           skillsactive="active",title="Skills",
+            return render_template('skills.html', skills="Невірний ідентифікатор навички.",
+                            active="Skills",
+                            title="Skills",
                             os=os_info,
                             datetime=current_time,
                             user_agent=us_ag)
     else:
-        return render_template('skills.html', skills=my_skills, aboutactive="",
-                           projectsactive="",
-                           contactsactive="",
-                           skillsactive="active",
+        return render_template('skills.html', skills=my_skills,
+                            active="Skills",
                             title="Skills",
                             os=os_info,
                             datetime=current_time,
