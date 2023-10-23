@@ -1,8 +1,15 @@
-from flask import render_template
+from flask import render_template,request,session,redirect,url_for
 import platform
 from datetime import datetime
 from app import app
-from flask import request
+import json
+import os
+jsonstr = """
+{
+    "username": "Admin",
+    "password": "adminpassword"
+}
+"""
 
 os_info = platform.platform()
 
@@ -37,6 +44,45 @@ def projects():
     return render_template("projects.html",
                            active="Проекти",
                            title="Projects",
+                           os=os_info,
+                           datetime=current_time,
+                           user_agent=us_ag
+                           )
+
+@app.route('/login/',methods=['POST','GET'])
+def login():
+    error = None
+    us_ag = request.headers.get('User-Agent')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    with open('app/users.json') as f:
+        data = json.load(f)
+    json_username = data['username']
+    json_password = data['password']
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['userpass']
+        if username == json_username and password == json_password:
+            session['username'] = username
+            return redirect(url_for('infos'))
+        else:
+            error = 'Помилка!Ім\'я користувача або пароль неправильні.'
+    return render_template('login.html',
+                           error=error,
+                           active="Login",
+                           title="Login",
+                           os=os_info,
+                           datetime=current_time,
+                           user_agent=us_ag)
+
+
+@app.route('/infos/')
+def infos():
+    us_ag = request.headers.get('User-Agent')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return render_template("infos.html",
+                           active="Info",
+                           title="Info",
                            os=os_info,
                            datetime=current_time,
                            user_agent=us_ag
