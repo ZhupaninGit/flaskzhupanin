@@ -2,12 +2,63 @@
 {%extends "index.html" %}
 {%block content%}
 <center>
-    <h2 style="margin-top: 15px;">Привіт,{{username}}!</h2>
+    <h2 style="margin-top: 15px;">Привіт , <span class=success>{{username}}</span>.</h2>
     <h3>Бажаєте вийти з теперішньої сесії?</h3>
     <form action="/logout/" method="post">
         <button class="btn btn-primary btn-lg btn-block" type="submit">Вийти</button>
     </form>
-
+    <hr>
+    {% if success %}<p class=success><strong>{{ success }}</strong>{% endif %}
+    <h3>Додавання кукі</h3>
+    <form action="/add_cookie/" method="post" class="addcookie">
+        <label for="cookie_key">Ключ:</label><br>
+        <input type="text" id="cookie_key" name="cookie_key" class="form-control form-control-lg"><br>
+        <label for="cookie_value">Значення:</label><br>
+        <input type="text" id="cookie_value" name="cookie_value" class="form-control form-control-lg"><br>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Додати кукі</button>
+    </form>
+    <hr>
+    <h3>Наявні cookie</h3>
+    <form action="/refresh/" method="post">
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Натисніть на кнопку для оновлення коректного відображення всіх cookies</button>
+    </form>
+    <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Ключ (key)</th>
+            <th scope="col">Значення (value)</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for key, value in cookies.items() %}
+          <tr>
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+            {% if key=="session" %}
+            <td> </td>
+            {% else %}
+            <td>
+                <form action="/deletecookie/{{key}}" method="post">
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Видалити</button>
+                </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form action="/deleteallcookies/" method="post">
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Видалити всі cookies</button>
+    </form>
+    <hr>
+    <h2>Зміна паролю</h2>
+    <form method="post" action="/changepassword/">
+        <label for="new_password">Введіть новий пароль : </label><br>
+        <input class="form-control form-control-lg" type="password" id="new_password" name="new_password"><br><br>
+        <input class="btn btn-primary btn-lg btn-block" type="submit" value="Змінити пароль">
+    </form>
+    <hr>
 </center>
 
 {% endblock %}

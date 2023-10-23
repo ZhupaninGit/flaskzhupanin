@@ -1,15 +1,12 @@
-from flask import render_template,request,session,redirect,url_for,flash
+from flask import render_template,request,session,redirect,url_for,make_response
 import platform
 from datetime import datetime
 from app import app
 import json
 import os
-jsonstr = """
-{
-    "username": "Admin",
-    "password": "adminpassword"
-}
-"""
+
+
+cookies = {}
 
 os_info = platform.platform()
 
@@ -51,6 +48,10 @@ def projects():
 
 @app.route('/login/',methods=['POST','GET'])
 def login():
+    if 'username' in session: 
+        rcookies = request.cookies
+        username = session['username']
+        return render_template("infos.html",username=username,cookies=rcookies)
     error = None
     us_ag = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -79,8 +80,10 @@ def login():
 
 @app.route('/infos/')
 def infos():
+    cookies = request.cookies
     us_ag = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    rcookies = request.cookies
     if 'username' in session:
         username = session['username']
         return render_template('infos.html',
@@ -88,14 +91,91 @@ def infos():
                                 title="Info",
                                 os=os_info,
                                 datetime=current_time,
-                                user_agent=us_ag
+                                user_agent=us_ag,
+                                cookies=rcookies,
                                 )
     return redirect(url_for('login'))
+
+
 
 @app.route('/logout/', methods=['POST'])
 def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
+
+@app.route('/refresh/', methods=['POST'])
+def refreshpage():
+    if 'username' in session:
+        rcookies = request.cookies
+        username = session['username']
+        return render_template("infos.html",username=username,cookies=rcookies)
+
+
+    
+@app.route('/add_cookie/', methods=['POST'])
+def add_cookie():
+    if 'username' in session:
+        rcookies = request.cookies
+        username = session['username']
+
+        cookie_key = request.form['cookie_key']
+        cookie_value = request.form['cookie_value']
+
+        if len(cookie_value) == 0 or len(cookie_key) == 0:
+            response = make_response(render_template("infos.html",username=username,success="Кукі не були додані,заповніть всі поля.",cookies=rcookies))
+        else:
+            response = make_response(render_template("infos.html",username=username,success="Кукі успішно додані(натисніть на кнопку нижче для оновлення стану кукі).",cookies=rcookies))
+            response.set_cookie(cookie_key,cookie_value)
+        return response  
+    return redirect(url_for('login'))
+
+
+
+@app.route('/deletecookie/<key>',methods=["POST","GET"])
+def deletecookie(key=None):
+    if 'username' in session:
+        if key:
+            rcookies = request.cookies
+            username = session['username']
+            response = make_response(render_template("infos.html",username=username,success="Вибраний кукі успішно видалений.(натисніть на кнопку нижче для оновлення стану кукі)",cookies=rcookies))
+            response.delete_cookie(key)
+            return response
+    return redirect(url_for('login'))
+
+
+@app.route('/deleteallcookies/',methods=["POST","GET"])
+def deleteallcookies():
+    if 'username' in session:
+        rcookies = request.cookies
+        username = session['username']
+        response = make_response(render_template("infos.html",username=username,success="Вcі кукі були видалені.(натисніть на кнопку нижче для оновлення стану кукі)",cookies=rcookies))
+        cookies = request.cookies
+        for key in cookies.keys():
+            if key != 'session':
+                response.delete_cookie(key)
+        return response
+    return redirect(url_for('login'))
+
+@app.route('/changepassword/',methods=["POST","GET"])
+def changepassword():
+    if 'username' in session:
+        username = session['username']
+        rcookies = request.cookies
+
+        if request.method == 'POST':
+            new_password = request.form['new_password']
+            if len(new_password) != 0:
+                with open('app/users.json', 'r') as file:
+                    users = json.load(file)
+                users["password"] = new_password
+                with open('app/users.json', 'w') as file:
+                    json.dump(users, file)
+                return render_template("infos.html",username=username,success="Пароль було успішно змінено.",cookies=rcookies)
+            return render_template('infos.html', username=username,success="Пароль не було змінено,введіть коректне значення.",cookies=rcookies)
+    return redirect(url_for('login'))
+
+
+
 
 @app.route('/skills/')
 @app.route('/skills/<int:id>')
