@@ -1,6 +1,13 @@
 
 {%extends "index.html" %}
 {%block content%}
-<h2>Hello!</h2>
+<center>
+    <h2 style="margin-top: 15px;">Привіт,{{username}}!</h2>
+    <h3>Бажаєте вийти з теперішньої сесії?</h3>
+    <form action="/logout/" method="post">
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Вийти</button>
+    </form>
+
+</center>
 
 {% endblock %}

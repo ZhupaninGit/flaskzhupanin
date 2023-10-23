@@ -62,12 +62,11 @@ img.icons{
 .btn-info{
     background-color: #fd9e39 !important;
     border-color: #fd9e39 !important;
-
+ 
 }
 
 div.error{
     margin-top: 15px;
     font-size: 24px;
     background-color: #fd5d39 !important;
-    height: 100%;
 }
