@@ -62,9 +62,12 @@ def login():
         username = form.username.data
         password = form.password.data
         if username == json_username and password == json_password:
-            session['username'] = username
-            flash('Успішний вхід.',"successs")
-            return redirect(url_for('infos'))
+            if form.remember.data:
+                session['username'] = username
+                flash('Успішний вхід.',"successs")
+                return redirect(url_for('infos'))
+            else:
+                flash('Успішні дані для входу,проте сесію користувача створено не було (виберіть "Запам\'ятати мене" для створення сесії).',"successs")
         else:
             flash('Помилка!Ім\'я користувача або пароль неправильні.',"error")
             
