@@ -1,0 +1,66 @@
+
+{%extends "index.html" %}
+{%block content%}
+
+
+
+ <div class="row">
+
+                <div class="row" style="margin-left: 45px">
+                 <div class="col">
+                   <div class="card text-center" style="width: 18rem;margin: 30px">
+  <img src="{{url_for('static',filename='images/telegram-ic.png')}}" style="width: 18rem;margin-left: 35px" class="card-img-top w-75" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">Telegram</h5>
+    <a href="https://t.me/zhupaninv" class="btn btn-primary">Напиши мені!</a>
+  </div>
+</div>
+                  </div>
+                  <div class="col">
+                    <div class="card text-center" style="width: 18rem;margin: 30px">
+  <img src="{{url_for('static',filename='images/instagram-ic.png')}}" style="width: 18rem;margin-left: 35px" class="card-img-top w-75" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">Instagram</h5>
+    <a href="https://www.instagram.com/vitaliyzhupanin/" class="btn btn-primary">Напиши мені!</a>
+  </div>
+</div>
+                  </div>
+                  <div class="col" >
+                     <div class="card text-center" style="width: 18rem;margin: 30px">
+  <img src="{{url_for('static',filename='images/email-ic.png')}}" style="width: 18rem;margin-left: 35px" class="card-img-top w-75" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">E-mail</h5>
+    <a href="mailto:vitali.zhupanin@gmail.com" class="btn btn-primary">Напиши мені!</a>
+  </div>
+</div>
+                  </div>
+                </div>
+ </div>
+
+<center>
+    <div class="container p-4 pb-0">
+      <form action="">
+        <h4>Дізнавайтеся про новини першими!</h4>
+<h4>Підпишіться на нашу розсилку новин</h4>
+        <div class="row">
+          <div class="col-auto mb-4 mb-md-0">
+            <p class="pt-2">
+            </p>
+          </div>
+          <div class="col col-12 mb-4 mb-md-0">
+            <div class="form-outline mb-4">
+              <input type="email" id="form5Example25" class="form-control" />
+              <label class="form-label" for="form5Example25">Введіть ваш e-mail</label>
+            </div>
+          </div>
+
+          <div class="col mb-4 mb-md-0">
+            <button type="submit" class="btn btn-primary mb-4">
+              Підписатися
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    </center>
+{% endblock %}
