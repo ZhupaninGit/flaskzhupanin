@@ -13,7 +13,7 @@
               
                           <h3 class="mb-5">Вхід в систему</h3>
                         <form method="POST" action="/login/" novalidate>
-                          {{ form.hidden_tag() }}
+                          {{ form.csrf_token }}
                                 <div class="form-outline mb-4">
                                     {{ render_field(form.username) }}<br>
                                       </div>
