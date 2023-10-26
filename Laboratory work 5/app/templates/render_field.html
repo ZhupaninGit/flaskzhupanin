@@ -1,5 +1,4 @@
 {% macro render_field(field) %}
-
 {% if field.errors %}
 
 <dd>{{ field(class="form-control",style="background-color: rgb(255, 100, 44);", **kwargs) | safe }}
@@ -10,7 +9,6 @@
 </ul>
 
 {% else %}
-
 <dd>{{ field(class="form-control") | safe }} </dd>
 <dt>{{ field.label(class="control-label") }}
 
