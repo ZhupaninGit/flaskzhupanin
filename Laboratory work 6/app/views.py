@@ -6,7 +6,8 @@ import json
 from app.forms import LoginForm,changePasswordForm,toDoForm
 from os.path import join,dirname,realpath
 from flask_sqlalchemy import SQLAlchemy
- 
+from flask_migrate import Migrate
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -15,10 +16,14 @@ db = SQLAlchemy(app)
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
+    description = db.Column(db.String(255))  # нове поле
     complete = db.Column(db.Boolean)
+
 with app.app_context():
     db.create_all()
 
+
+migrate = Migrate(app, db)
 jsonPath = join(dirname(realpath(__file__)), 'users.json')
 
 
@@ -187,7 +192,7 @@ def add_do():
     toDo = toDoForm()
     todo_list = Todo.query.all()
     if toDo.validate_on_submit():
-        newTask = Todo(title=toDo.newtodo.data,complete=False)
+        newTask = Todo(title=toDo.newtodo.data,description=toDo.newtododescription.data,complete=False)
         db.session.add(newTask)
         db.session.commit()
         flash("Завдання було успішно додано.","successs")    

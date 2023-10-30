@@ -14,5 +14,6 @@ class changePasswordForm(FlaskForm):
 
 class toDoForm(FlaskForm):
     newtodo = StringField('Введіть нове завдання', validators=[DataRequired("Це поле обов'язкове до заповнення!"), Length(min=1 , max=100)])
+    newtododescription = StringField('Введіть опис до завдання', validators=[DataRequired("Це поле обов'язкове до заповнення!"), Length(min=1 , max=255)])
     submit = SubmitField("Додати")
 
