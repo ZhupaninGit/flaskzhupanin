@@ -80,3 +80,34 @@ img.icons{
 .addcookie input{
     margin: 10px 10px 10px 10px;
 }
+
+.userfeedback{
+    font-size: 32px;
+    color: #ff8400;
+}
+
+.userfeedback::before{
+    content: "👤";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 35px;
+}
+
+.emailfeedback{
+    font-size: 14px;
+    color: #373737;
+}
+.emailfeedback::before{
+    content: "✉";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 0px;
+}
+
+.feedbackmessage{
+    width: 95vh;
+    border: 1px solid #ff8400;
+    border-radius: 3px;
+}

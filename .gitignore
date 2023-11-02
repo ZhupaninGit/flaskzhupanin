@@ -1,4 +1,5 @@
 # Ignore files with .txt extension
 *.txt
 Laboratory work ?/env/**
+Selfwork/env/**
 .idea

@@ -3,7 +3,7 @@ import platform
 from datetime import datetime
 from app import app
 import json
-from app.forms import LoginForm,changePasswordForm,toDoForm
+from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm
 from os.path import join,dirname,realpath
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -18,6 +18,13 @@ class Todo(db.Model):
     title = db.Column(db.String(100))
     description = db.Column(db.String(255))  # нове поле
     complete = db.Column(db.Boolean)
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    message = db.Column(db.String(255))
+
 
 with app.app_context():
     db.create_all()
@@ -220,6 +227,30 @@ def update(todo_id):
     db.session.commit()
     flash(f"Статус завдання №{todo_id} успішно змінено.","successs")    
     return redirect(url_for("todo"))
+
+@app.route('/feedback/',methods=["GET","POST"])
+def feedback():
+    feedback = FeedbackForm()
+    feedback_list = Feedback.query.all()
+    return render_template("feedback.html",active="Відгуки",title="Відгуки",form=feedback,feedback_list=feedback_list)
+
+@app.route("/add_feedback/",methods=["GET","POST"])
+def add_feedback():
+    feedback = FeedbackForm()
+    feedback_list = Feedback.query.all()
+    if feedback.validate_on_submit():
+        newfeedback = Feedback(name=feedback.name.data, email=feedback.email.data, message=feedback.message.data)
+        db.session.add(newfeedback)
+        db.session.commit()
+        flash("Відгук було успішно додано.","successs")    
+        return redirect(url_for("feedback"))
+    flash("Відгук не було додано.","error")    
+    return render_template('feedback.html',
+                                active="Відгуки",
+                                form = feedback,
+                                title="Відгуки",
+                                feedback_list=feedback_list)
+
 
 @app.route('/skills/')
 @app.route('/skills/<int:id>')
