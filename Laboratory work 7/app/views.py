@@ -3,7 +3,7 @@ import platform
 from datetime import datetime
 from app import app
 import json
-from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm
+from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm,RegistrationForm
 from os.path import join,dirname,realpath
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -24,6 +24,12 @@ class Feedback(db.Model):
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     message = db.Column(db.String(255))
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100),unique=True,nullable=False)
+    email = db.Column(db.String(100),unique=True,nullable=False)
+    password = db.Column(db.String(255),nullable=False)
 
 
 with app.app_context():
@@ -69,32 +75,33 @@ def login():
     form = LoginForm()
     if 'username' in session: 
         return redirect(url_for('infos'))
-
-    with open(jsonPath) as f:
-        data = json.load(f)
-    try:
-        json_username = data['username']
-        json_password = data['password']
-    except:
-        flash("Помилка отримання даних користувачів,спробуйте ще раз!","error")
-        return redirect(url_for("login"))
+    
     if form.validate_on_submit():
-        username = form.username.data
+        email = form.email.data
         password = form.password.data
-        if username == json_username and password == json_password:
-            if form.remember.data:
-                session['username'] = username
-                flash('Успішний вхід.',"successs")
-                return redirect(url_for('infos'))
-            else:
-                flash('Успішні дані для входу,проте сесію користувача створено не було (виберіть "Запам\'ятати мене" для створення сесії).',"successs")
-                return redirect(url_for("info"))
+        if email == "admin@gmail.com" and password == "adminadmin":
+            flash("Успішний вхід!",category="successs")
+            redirect(url_for("info"))
         else:
-            flash('Помилка!Ім\'я користувача або пароль неправильні.',"error")
+            flash('Помилка!Ім\'я користувача або пароль неправильні.',category="error")
     return render_template('login.html',
                            form=form,
-                           active="Login",
-                           title="Login")
+                           active="Увійти",
+                           title="Увійти")
+
+
+@app.route('/register/',methods=['POST','GET'])
+def register():
+    form = RegistrationForm()
+    if 'username' in session: 
+        return redirect(url_for('infos'))
+    if form.validate_on_submit():
+        flash(f"Користувач {form.username.data} успішно створений!",category="successs")
+        redirect(url_for("login"))
+    return render_template('register.html',
+                           form=form,
+                           active="Реєстрація",
+                           title="Реєстрація аккаунта")
 
 
 @app.route('/infos/')

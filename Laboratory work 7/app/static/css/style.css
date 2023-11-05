@@ -71,11 +71,19 @@ img.icons{
 .error{
     background-color: rgb(255, 100, 44);
     font-size: 18px;
-    
+    font-size: 18px; 
+    width: 50%;
+    height: 25%;
+    border-radius: 10px;
+    margin-top: 15px;
 }
 .successs{
     background-color: rgb(44, 255, 146);
     font-size: 18px; 
+    width: 50%;
+    height: 25%;
+    border-radius: 10px;
+    margin-top: 15px;
 }
 .addcookie input{
     margin: 10px 10px 10px 10px;
