@@ -40,9 +40,9 @@
         {% for name,url in accountmenu.items()%}
         <li class="nav-item">
         {% if active==name %}
-            <a style="background-color: #fca950;color: rgb(62, 62, 62) !important;border-radius: 6px;"  class="nav-link active" aria-current="page" href="{{url}}">{{name}}</a>
+            <a style="background-color: #fca950;color: rgb(255, 255, 255) !important;border-radius: 6px;"  class="nav-link active" aria-current="page" href="{{url}}">{{name}}</a>
         {% else %}
-          <a style="color: rgb(124, 124, 124) !important;background-color: #fca950;border-radius: 6px;" class="nav-link" aria-current="page" href="{{url}}">{{name}}</a>
+          <a style="color: rgb(50, 50, 50) !important;background-color: #fca950;border-radius: 6px;" class="nav-link" aria-current="page" href="{{url}}">{{name}}</a>
         {% endif %}
           </li>
         {% endfor %}

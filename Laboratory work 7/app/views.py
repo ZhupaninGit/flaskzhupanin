@@ -1,35 +1,18 @@
 from flask import render_template,request,session,redirect,url_for,make_response,flash
 import platform
 from datetime import datetime
-from app import app
+from app import app,db
 import json
 from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm,RegistrationForm
+from app.models import User,Todo,Feedback
+
 from os.path import join,dirname,realpath
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
  
- 
-class Todo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    description = db.Column(db.String(255))  # нове поле
-    complete = db.Column(db.Boolean)
-
-class Feedback(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100))
-    message = db.Column(db.String(255))
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100),unique=True,nullable=False)
-    email = db.Column(db.String(100),unique=True,nullable=False)
-    password = db.Column(db.String(255),nullable=False)
 
 
 with app.app_context():
@@ -37,7 +20,6 @@ with app.app_context():
 
 
 migrate = Migrate(app, db)
-jsonPath = join(dirname(realpath(__file__)), 'users.json')
 
 
 os_info = platform.platform()
@@ -70,34 +52,43 @@ def projects():
                            active="Проекти",
                            title="Projects")
 
-@app.route('/login/',methods=['POST','GET'])
+@app.route('/login/', methods=['POST', 'GET'])
 def login():
     form = LoginForm()
-    if 'username' in session: 
-        return redirect(url_for('infos'))
-    
     if form.validate_on_submit():
         email = form.email.data
-        password = form.password.data
-        if email == "admin@gmail.com" and password == "adminadmin":
-            flash("Успішний вхід!",category="successs")
-            redirect(url_for("info"))
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if bcrypt.check_password_hash(user.password,form.password.data):
+                session['username'] = email
+                flash(f"Успішний вхід! Привіт, {user.username}.", category="successs")
+                return redirect(url_for("infos"))
         else:
-            flash('Помилка!Ім\'я користувача або пароль неправильні.',category="error")
+            flash('Помилка! Ім\'я користувача або пароль неправильні.', category="error")
     return render_template('login.html',
                            form=form,
                            active="Увійти",
                            title="Увійти")
 
+@app.route('/allusers/', methods=['POST', 'GET'])
+def allusers():
+    allusers = User.query.all()
+    return render_template('allusers.html',
+                           users=allusers,
+                           title="Всі користувачі")
+
 
 @app.route('/register/',methods=['POST','GET'])
 def register():
     form = RegistrationForm()
-    if 'username' in session: 
-        return redirect(url_for('infos'))
+
     if form.validate_on_submit():
-        flash(f"Користувач {form.username.data} успішно створений!",category="successs")
-        redirect(url_for("login"))
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        newuser = User(username=form.username.data,email=form.email.data,password=hashed_password)
+        db.session.add(newuser)
+        db.session.commit()
+        flash(f"Користувач {form.username.data} успішно створений!Тепер Ви можете увійти в свій аккаунт.",category="successs")
+        return redirect(url_for("login"))
     return render_template('register.html',
                            form=form,
                            active="Реєстрація",
@@ -166,33 +157,33 @@ def deleteallcookies():
         return response
     return redirect(url_for('login'))
 
-@app.route('/changepassword/',methods=["POST","GET"])
-def changepassword():
-    form = LoginForm()
-    rcookies = request.cookies
-    changePassword = changePasswordForm()
-    if 'username' in session:
-        username = session['username']
-        if changePassword.validate_on_submit():
-            new_password = changePassword.newpassword.data
-            print(new_password)
-            if len(new_password) < 3 and len(new_password) > 10:
-                flash("Пароль не було змінено.","error")    
-                return redirect(url_for('infos'))
-            else:
-                with open(jsonPath, 'r') as file:
-                    users = json.load(file)
-                users["password"] = new_password
-                with open(jsonPath, 'w') as file:
-                    json.dump(users, file)
-                flash("Пароль було успішно змінено.","successs")    
-                return redirect(url_for('infos'))
-        return render_template('infos.html',
-                                username=username,
-                                form=form,
-                                changePasswordForm = changePassword,
-                                title="Info",
-                                cookies=rcookies)
+# @app.route('/changepassword/',methods=["POST","GET"])
+# def changepassword():
+#     form = LoginForm()
+#     rcookies = request.cookies
+#     changePassword = changePasswordForm()
+#     if 'username' in session:
+#         username = session['username']
+#         if changePassword.validate_on_submit():
+#             new_password = changePassword.newpassword.data
+#             print(new_password)
+#             if len(new_password) < 3 and len(new_password) > 10:
+#                 flash("Пароль не було змінено.","error")    
+#                 return redirect(url_for('infos'))
+#             else:
+#                 with open(jsonPath, 'r') as file:
+#                     users = json.load(file)
+#                 users["password"] = new_password
+#                 with open(jsonPath, 'w') as file:
+#                     json.dump(users, file)
+#                 flash("Пароль було успішно змінено.","successs")    
+#                 return redirect(url_for('infos'))
+#         return render_template('infos.html',
+#                                 username=username,
+#                                 form=form,
+#                                 changePasswordForm = changePassword,
+#                                 title="Info",
+#                                 cookies=rcookies)
 
 
 @app.route('/todo/',methods=["GET","POST"])
