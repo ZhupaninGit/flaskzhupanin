@@ -3,3 +3,8 @@
 Laboratory work ?/env/**
 Selfwork/env/**
 .idea
+Laboratory work ?/__pycache__/**
+Laboratory work ?/migrations/**
+Laboratory work ?/instance/**
+
+

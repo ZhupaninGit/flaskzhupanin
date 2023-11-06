@@ -1,18 +1,12 @@
 from flask import render_template,request,session,redirect,url_for,make_response,flash
 import platform
 from datetime import datetime
-from app import app,db
-import json
+from app import app,db,bcrypt,login_manager
 from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm,RegistrationForm
 from app.models import User,Todo,Feedback
 
-from os.path import join,dirname,realpath
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
-
-bcrypt = Bcrypt(app)
- 
+from flask_login import login_user,login_required,logout_user,current_user
 
 
 with app.app_context():
@@ -21,10 +15,11 @@ with app.app_context():
 
 migrate = Migrate(app, db)
 
-
 os_info = platform.platform()
 
 my_skills = ["Network Basic","C++ Basic","Dart\Flutter Basic","Operation System","Python Basic","Java Basic"]
+
+
 
 @app.route('/')
 def info():
@@ -39,10 +34,9 @@ def info():
 
 @app.route('/contacts/')
 def contacts():
-
     return render_template("contacts.html",
                            active="Контакти",
-                           title="Contacts")
+                           title="Контакти")
 
 @app.route('/projects/')
 def projects():
@@ -54,13 +48,17 @@ def projects():
 
 @app.route('/login/', methods=['POST', 'GET'])
 def login():
+    if current_user.is_authenticated:
+        flash(f"Ви вже ввійшли в свій аккаунт.", category="successs")
+        return redirect(url_for("infos"))
+
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         user = User.query.filter_by(email=email).first()
         if user:
             if bcrypt.check_password_hash(user.password,form.password.data):
-                session['username'] = email
+                login_user(user,remember=form.remember.data)
                 flash(f"Успішний вхід! Привіт, {user.username}.", category="successs")
                 return redirect(url_for("infos"))
         else:
@@ -80,8 +78,10 @@ def allusers():
 
 @app.route('/register/',methods=['POST','GET'])
 def register():
+    if current_user.is_authenticated:
+        flash(f"Ви вже ввійшли в свій аккаунт.", category="successs")
+        return redirect(url_for("infos"))
     form = RegistrationForm()
-
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
         newuser = User(username=form.username.data,email=form.email.data,password=hashed_password)
@@ -96,58 +96,60 @@ def register():
 
 
 @app.route('/infos/')
+@login_required
 def infos():
     changePassword = changePasswordForm()
     rcookies = request.cookies
-    if 'username' in session:
-        username = session['username']
-        return render_template('infos.html',
-                                username=username,
-                                changePasswordForm = changePassword,
-                                title="Info",
-                                cookies=rcookies)
-    return redirect(url_for('login'))
+    username = current_user.username
+    return render_template('infos.html',
+                            username=username,
+                            changePasswordForm=changePassword,
+                            title="Info",
+                            cookies=rcookies)
 
 
 
-@app.route('/logout/', methods=['POST'])
+@app.route('/logout/', methods=['POST',"GET"])
+@login_required
 def logout():
-    session.pop('username', None)
+    flash(f"Ви успішно вийшли з власного аккаунту.",category="successs")
+    logout_user()
     return redirect(url_for('login'))
+
 
     
 @app.route('/add_cookie/', methods=['POST'])
+@login_required
 def add_cookie():
-    if 'username' in session:
-        cookie_key = request.form['cookie_key']
-        cookie_value = request.form['cookie_value']
+    cookie_key = request.form['cookie_key']
+    cookie_value = request.form['cookie_value']
 
-        if len(cookie_value) == 0 or len(cookie_key) == 0:
-            flash("Кукі не були додані,заповніть всі поля.","error")
-            response = make_response(redirect(url_for('infos')))
-        else:
-            flash("Кукі успішно додані.","successs")
-            response = make_response(redirect(url_for('infos')))
-            response.set_cookie(cookie_key,cookie_value)
+    if len(cookie_value) == 0 or len(cookie_key) == 0:
+        flash("Кукі не були додані,заповніть всі поля.","error")
+        response = make_response(redirect(url_for('infos')))
+    else:
+        flash("Кукі успішно додані.","successs")
+        response = make_response(redirect(url_for('infos')))
+        response.set_cookie(cookie_key,cookie_value)
         return response  
     return redirect(url_for('login'))
 
 
 
 @app.route('/deletecookie/<key>',methods=["POST","GET"])
+@login_required
 def deletecookie(key=None):
-    if 'username' in session:
-        if key:
-            flash("Вибраний кукі успішно видалений.","successs")
-            response = make_response(redirect(url_for('infos')))
-            response.delete_cookie(key)
-            return response
+    if key:
+        flash("Вибраний кукі успішно видалений.","successs")
+        response = make_response(redirect(url_for('infos')))
+        response.delete_cookie(key)
+        return response
     return redirect(url_for('login'))
 
 
 @app.route('/deleteallcookies/',methods=["POST","GET"])
+@login_required
 def deleteallcookies():
-    if 'username' in session:
         flash("Вcі кукі були видалені.","successs")
         response = make_response(redirect(url_for('infos')))
         cookies = request.cookies
@@ -155,7 +157,6 @@ def deleteallcookies():
             if key != 'session':
                 response.delete_cookie(key)
         return response
-    return redirect(url_for('login'))
 
 # @app.route('/changepassword/',methods=["POST","GET"])
 # def changepassword():
