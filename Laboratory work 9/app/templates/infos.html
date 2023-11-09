@@ -3,9 +3,11 @@
 {%extends "index.html" %}
 {%block content%}
 <center>
+  <section>
     <h2 style="margin-top: 15px;">Привіт , <span class=success>{{username}}</span>.</h2>
-
+    <div class="useremail">{{current_user.email}}</div>
     <hr class="my-4">
+  </section>
     <h3>Додавання кукі</h3>
     <div style="max-width: 100vh;">
       <form action="/add_cookie/" method="post" class="addcookie">
@@ -48,7 +50,6 @@
       <form action="/deleteallcookies/" method="post">
         <button class="btn btn-primary btn-lg btn-block" type="submit">Видалити всі cookies</button>
     </form>
-
       <!-- <form method="POST" action="/changepassword/" novalidate>
         {{ changePasswordForm.csrf_token }}
                     <div class="form-outline mb-4">

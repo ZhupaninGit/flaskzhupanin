@@ -2,24 +2,32 @@ from flask import render_template,request,session,redirect,url_for,make_response
 import platform
 from datetime import datetime
 from app import app,db,bcrypt,login_manager
-from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm,RegistrationForm
+from app.forms import LoginForm,changePasswordForm,toDoForm,FeedbackForm,RegistrationForm,ChangeAccountInfoForm
 from app.models import User,Todo,Feedback
 
 from flask_migrate import Migrate
 from flask_login import login_user,login_required,logout_user,current_user
 
+import os,secrets
+from PIL import Image
 
-with app.app_context():
-    db.create_all()
+def save_photo(form_picture):
+    random_hex = secrets.token_hex(8)
+    f_name,f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path,"static/profile_pics",picture_fn)
 
+    image = Image.open(form_picture)
+    image.thumbnail((500,500))
+    image.save(picture_path)
+
+    return picture_fn
 
 migrate = Migrate(app, db)
 
 os_info = platform.platform()
 
 my_skills = ["Network Basic","C++ Basic","Dart\Flutter Basic","Operation System","Python Basic","Java Basic"]
-
-
 
 @app.route('/')
 def info():
@@ -50,7 +58,7 @@ def projects():
 def login():
     if current_user.is_authenticated:
         flash(f"Ви вже ввійшли в свій аккаунт.", category="successs")
-        return redirect(url_for("infos"))
+        return redirect(url_for("account"))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -60,7 +68,7 @@ def login():
             if bcrypt.check_password_hash(user.password,form.password.data):
                 login_user(user,remember=form.remember.data)
                 flash(f"Успішний вхід! Привіт, {user.username}.", category="successs")
-                return redirect(url_for("infos"))
+                return redirect(url_for("account"))
         else:
             flash('Помилка! Ім\'я користувача або пароль неправильні.', category="error")
     return render_template('login.html',
@@ -75,12 +83,39 @@ def allusers():
                            users=allusers,
                            title="Всі користувачі")
 
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
+
+@app.route('/account/',methods=['POST', 'GET'])
+@login_required
+def account():
+    formChange = ChangeAccountInfoForm()
+    if formChange.validate_on_submit():
+        if formChange.image.data:
+            picture_file = save_photo(formChange.image.data)
+            current_user.image = picture_file
+        current_user.username = formChange.username.data
+        current_user.email = formChange.email.data
+        current_user.about_me = formChange.about.data
+        db.session.commit()
+        flash('Успішне оновлення даних користувача.', category='successs')
+
+        return redirect(url_for("account"))
+    if request.method == "GET":
+        formChange.username.data = current_user.username
+        formChange.email.data = current_user.email
+        formChange.about.data = current_user.about_me
+    return render_template('account.html', formChange=formChange)
+
 
 @app.route('/register/',methods=['POST','GET'])
 def register():
     if current_user.is_authenticated:
         flash(f"Ви вже ввійшли в свій аккаунт.", category="successs")
-        return redirect(url_for("infos"))
+        return redirect(url_for("account"))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
@@ -158,33 +193,21 @@ def deleteallcookies():
                 response.delete_cookie(key)
         return response
 
-# @app.route('/changepassword/',methods=["POST","GET"])
-# def changepassword():
-#     form = LoginForm()
-#     rcookies = request.cookies
-#     changePassword = changePasswordForm()
-#     if 'username' in session:
-#         username = session['username']
-#         if changePassword.validate_on_submit():
-#             new_password = changePassword.newpassword.data
-#             print(new_password)
-#             if len(new_password) < 3 and len(new_password) > 10:
-#                 flash("Пароль не було змінено.","error")    
-#                 return redirect(url_for('infos'))
-#             else:
-#                 with open(jsonPath, 'r') as file:
-#                     users = json.load(file)
-#                 users["password"] = new_password
-#                 with open(jsonPath, 'w') as file:
-#                     json.dump(users, file)
-#                 flash("Пароль було успішно змінено.","successs")    
-#                 return redirect(url_for('infos'))
-#         return render_template('infos.html',
-#                                 username=username,
-#                                 form=form,
-#                                 changePasswordForm = changePassword,
-#                                 title="Info",
-#                                 cookies=rcookies)
+@app.route('/changepassword/',methods=["POST","GET"])
+@login_required
+def changepassword():
+    form = changePasswordForm()
+    if form.validate_on_submit():
+        if bcrypt.check_password_hash(current_user.password, form.oldpassword.data):
+            new_password_hashed = bcrypt.generate_password_hash(form.newpassword.data)
+            current_user.password = new_password_hashed
+            db.session.commit()
+            flash('Пароль успішно змінено', 'successs')
+            return redirect(url_for('account'))
+        else:
+            flash('Старий пароль неправильний.', 'error')
+
+    return render_template('changepassword.html', title='Зміна паролю', form=form)
 
 
 @app.route('/todo/',methods=["GET","POST"])

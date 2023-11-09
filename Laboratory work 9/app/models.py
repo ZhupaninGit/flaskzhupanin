@@ -1,5 +1,6 @@
 from app import db,login_manager
 from flask_login import UserMixin
+import datetime
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,3 +24,6 @@ class User(UserMixin,db.Model):
     username = db.Column(db.String(100),unique=True,nullable=False)
     email = db.Column(db.String(100),unique=True,nullable=False)
     password = db.Column(db.String(255),nullable=False)
+    about_me = db.Column(db.String(255)) 
+    last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    image = db.Column(db.String(100),default="default.jpg")

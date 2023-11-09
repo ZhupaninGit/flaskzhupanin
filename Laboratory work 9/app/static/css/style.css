@@ -107,6 +107,13 @@ img.icons{
     height: 15px;
     margin-right: 0px;
 }
+.useremail::before{
+    content: "✉";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right:5px;
+}
 
 .feedbackmessage{
     width: 95vh;
