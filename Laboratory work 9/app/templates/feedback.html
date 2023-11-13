@@ -1,0 +1,66 @@
+{% from "render_field.html" import render_field %}
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 75vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+        <h4 class="text-center my-3 pb-3">Залиште свій відгук</h4>
+        <form method="POST" action="/add_feedback/" novalidate>
+            <center>
+          {{ form.csrf_token }}
+          <div class="form-outline mb-4">
+            {{ render_field(form.name) }}
+          </div>
+          <div class="form-outline mb-4">
+            {{ render_field(form.email) }}
+          </div>
+          <div class="form-outline mb-4">
+            {{ render_field(form.message) }}
+          </div>
+          
+            <button style="margin-top: 15px;" type="submit" class="btn btn-primary">Надіслати</button>
+          </center>
+        </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+        <h4 class="text-center my-3 pb-3">Наявні відгуки</h4>
+        {% for feedback in feedback_list %}
+        <div>
+          <div class="userfeedback">
+            {{ feedback.name }} 
+        </div> 
+          <div class="emailfeedback">
+            {{ feedback.email }}
+          </div>
+                <div class="feedbackmessage" >
+                    <div style="margin:10px;">{{feedback.message}}</div>
+                </div>
+        <hr class="my-4">
+      {% endfor %}
+          </center>
+        </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </section>
+
+
+{% endblock %}

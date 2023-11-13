@@ -1,0 +1,68 @@
+{% from "render_field.html" import render_field %}
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+    <center>
+        <h4 class="text-center my-3 pb-3">Список справ</h4>
+        <form method="POST" action="/add_do/" novalidate>
+            {{ toDoForm.csrf_token }}
+                <div class="form-outline mb-4">
+                    {{ render_field(toDoForm.newtodo) }}<br>
+                </div>
+                <div class="form-outline mb-4">
+                    {{ render_field(toDoForm.newtododescription) }}<br>
+                </div>
+                    {{ toDoForm.submit(class="btn btn-primary btn-lg btn-block") }}<br>
+        </form>
+        <hr class="my-4">
+
+    </center>
+    <table class="table mb-4">
+        <thead>
+            <tr>
+              <th scope="col">No.</th>
+              <th scope="col">Завдання</th>
+              <th scope="col">Опис</th>
+              <th scope="col">Статус виконання</th>
+              <th scope="col">Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            {% for todo in todolist %}
+            <tr>
+              <th scope="row">{{todo.id }}</th>
+              <td>{{ todo.title }}</td>
+              <td>{{ todo.description }}</td>
+              <td>
+                {% if todo.complete == False %}
+                <div class="alert alert-secondary" role="alert">У процесі виконання</div>
+                {% else %}
+                <div class="alert alert-success" role="alert">Виконано</div>
+                {% endif %}
+              </td>
+              <td>
+                <a class="btn btn-success" href="/update_do/{{ todo.id }}">Виконане</a>
+                <a class="btn btn-danger ms-1" href="/delete_do/{{ todo.id }}">Видалити</a>
+              </td>
+            </tr>
+            {% endfor %}
+  
+
+        </tbody>
+    </table>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
