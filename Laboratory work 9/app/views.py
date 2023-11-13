@@ -7,21 +7,11 @@ from app.models import User,Todo,Feedback
 
 from flask_migrate import Migrate
 from flask_login import login_user,login_required,logout_user,current_user
-
+from .photo import save_photo,delete_photo
 import os,secrets
 from PIL import Image
 
-def save_photo(form_picture):
-    random_hex = secrets.token_hex(8)
-    f_name,f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path,"static/profile_pics",picture_fn)
 
-    image = Image.open(form_picture)
-    image.thumbnail((500,500))
-    image.save(picture_path)
-
-    return picture_fn
 
 migrate = Migrate(app, db)
 
@@ -95,6 +85,7 @@ def account():
     formChange = ChangeAccountInfoForm()
     if formChange.validate_on_submit():
         if formChange.image.data:
+            delete_photo(current_user.image)
             picture_file = save_photo(formChange.image.data)
             current_user.image = picture_file
         current_user.username = formChange.username.data
@@ -102,13 +93,12 @@ def account():
         current_user.about_me = formChange.about.data
         db.session.commit()
         flash('Успішне оновлення даних користувача.', category='successs')
-
         return redirect(url_for("account"))
-    if request.method == "GET":
+    elif request.method == "GET":
         formChange.username.data = current_user.username
         formChange.email.data = current_user.email
         formChange.about.data = current_user.about_me
-    return render_template('account.html', formChange=formChange)
+    return render_template('account.html', formChange=formChange,title="Account")
 
 
 @app.route('/register/',methods=['POST','GET'])
