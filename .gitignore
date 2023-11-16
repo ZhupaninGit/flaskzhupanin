@@ -1,6 +1,8 @@
 # Ignore files with .txt extension
 *.txt
 Laboratory work ?/env/**
+Laboratory work ??/env/**
+
 Selfwork/env/**
 .idea
 Laboratory work ?/__pycache__/**
