@@ -1,0 +1,53 @@
+{% from "render_field.html" import render_field %}
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+            <center>
+              <h4 class="text-center my-3 pb-3">Теги</h4>
+            </center>
+            <table class="table mb-4">
+              <thead>
+                  <tr>
+                    <th scope="col">Тег</th>
+                    <th scope="col">Дія</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for tag in tags %}
+                  <tr>
+                    <td>{{ tag.name }}</td>
+                    <td>
+                      {% if current_user.is_authenticated %}
+                      <a class="btn btn-danger ms-1" href="{{ url_for('post.delete_tag', tag_id=tag.id) }}">Видалити</a>
+                    </td>
+                    {% endif %}
+                    
+                  </tr>
+                  {% endfor %}
+        
+      
+              </tbody>
+          </table>
+            {% if current_user.is_authenticated %}
+            <center>
+            <h5>Бажаєте додати новий тег?</h5>
+            <form method="post" action="{{url_for('post.tag')}}" novalidate>
+                {{ form.csrf_token }}
+                {{render_field(form.name)}}
+               {{form.submit(class="btn btn-primary btn-lg btn-block",style="margin-top:20px;") }} 
+              </form>
+            {% endif %}
+          </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

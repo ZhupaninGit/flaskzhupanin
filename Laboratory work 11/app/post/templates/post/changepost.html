@@ -1,0 +1,50 @@
+{% from "render_field.html" import render_field %}
+
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+            <center>
+              <h4 class="text-center my-3 pb-3">Зміна посту</h4>
+              <form method="POST" action="{{url_for('post.update_post',post_id=postid)}}" novalidate enctype="multipart/form-data">
+                  {{ formChange.csrf_token }}
+                      <div class="form-outline mb-4">
+                          {{ render_field(formChange.newpost) }}<br>
+                      </div>
+                      <div class="form-outline mb-4">
+                          {{ render_field(formChange.newposttext) }}<br>
+                      </div>
+                      <div class="form-outline mb-4">
+                            {{ render_field(formChange.image) }}<br>
+                        </div>
+                            {{formChange.type( class="form-select")}}
+                            {{formChange.type.label}} 
+                          <br>
+                            {{formChange.category( class="form-select")}}
+                            {{formChange.category.label}} 
+
+                            {{formChange.tag( class="form-select")}}
+                            {{formChange.tag.label}} 
+                        <br>
+                        <div>
+                         <br> {{formChange.enabled}}
+                          {{formChange.enabled.label}} <br><br>
+                        </div>
+        
+                          {{ formChange.submit(class="btn btn-primary btn-lg btn-block",style="margin-top:20px;") }}<br>
+              </form>
+              <hr class="my-4">
+
+          </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% from "render_field.html" import render_field %}
+
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+            <center>
+              <h4 class="text-center my-3 pb-3">Новий пост</h4>
+              <form method="POST" action="{{url_for('post.addnewpost')}}" novalidate enctype="multipart/form-data">
+                  {{ post.csrf_token }}
+                      <div class="form-outline mb-4">
+                          {{ render_field(post.newpost) }}<br>
+                      </div>
+                      <div class="form-outline mb-4">
+                          {{ render_field(post.newposttext) }}<br>
+                      </div>
+                      <div class="form-outline mb-4">
+                            {{ render_field(post.image) }}<br>
+                        </div>
+                        <div class="form-outline mb-4">
+                          {{post.type( class="form-select")}}
+                          {{post.type.label}}                       
+                        </div>
+                        <div class="form-outline mb-4">
+                          {{post.category( class="form-select")}}
+                          {{post.category.label}}                        
+                        </div>
+                        <div class="form-outline mb-4">
+                          {{post.tag( class="form-select")}}
+                          {{post.tag.label}}                        
+                        </div>
+
+                        <br>
+                        <div>
+                         <br> {{post.enabled}}
+                          {{post.enabled.label}} <br><br>
+                        </div>
+         
+
+                          {{ post.submit(class="btn btn-primary btn-lg btn-block",style="margin-top:20px;") }}<br>
+              </form>
+              <hr class="my-4">
+
+          </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
