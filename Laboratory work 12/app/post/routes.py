@@ -13,8 +13,8 @@ def post(post_id = None):
     page = request.args.get('page', 1, type=int)
     postlist = Post.query.paginate(page=page, per_page=3) 
     if post_id is not None:
-        currentPost = Post.query.get_or_404(post_id)
-        category = Category.query.get_or_404(currentPost.category_id)
+        currentPost = db.session.get(Post,post_id)
+        category = db.session.get(Category,currentPost.category_id)
         return render_template("currentpost.html",active="Пости",title=f"Пост №{post_id}",currentPost=currentPost,EnumPost=EnumPost,category=category)
     post = postForm()
     return render_template("post.html",active="Пости",title="Пости",postlist=postlist,EnumPost=EnumPost,post=post)
@@ -23,7 +23,7 @@ from flask import request
 
 @bp.route('/post/categories/<int:category_id>')
 def posts_in_category(category_id):
-    category = Category.query.get_or_404(category_id)
+    category = db.session.get(Category,category_id)
     page = request.args.get('page', 1, type=int)
     postlist = Post.query.filter_by(category_id=category.id).order_by(Post.created.desc()).paginate(page=page, per_page=3)
     return render_template('categoriesposts.html',active="Пости", postlist=postlist, EnumPost=EnumPost, categoryname=category.name,category_id=category_id)
@@ -39,7 +39,7 @@ def addnewpost():
         if post.image.data:
             image = save_photo(post.image.data)
         type = post.type.data
-        category = Category.query.get_or_404(int(post.category.data))
+        category = db.session.get(Category,int(post.category.data))
         newpost = Post(title=post.newpost.data,text=post.newposttext.data,image=image,enabled=post.enabled.data,type=type,user_id=current_user.id,category=category)
         db.session.add(newpost)
         db.session.commit()
@@ -52,14 +52,14 @@ def addnewpost():
 
         db.session.commit()
         flash("Пост був успішно доданий!","successs")
-        return render_template("newpost.html",active="Пости",title="Пости",post=post,EnumPost=EnumPost)
+        return redirect(url_for("post.post"))
     return render_template("newpost.html",active="Пости",title="Пости",post=post,EnumPost=EnumPost)
 
 
 @bp.route("/<int:post_id>/delete", methods=["GET", "POST"])
 @login_required
 def delete_post(post_id):
-    post = Post.query.get_or_404(post_id)
+    post = db.session.get(Post,post_id)
     if post.user_id == current_user.id:
         db.session.delete(post)
         db.session.commit()
@@ -71,7 +71,7 @@ def delete_post(post_id):
 @login_required
 def update_post(post_id):
     formChange = changePostForm()
-    post = Post.query.get_or_404(post_id)
+    post = db.session.get(Post,post_id)
    
     if formChange.validate_on_submit():
         try:
@@ -83,7 +83,7 @@ def update_post(post_id):
             post.text = formChange.newposttext.data
             post.enabled = formChange.enabled.data
             post.type = formChange.type.data
-            category = Category.query.get_or_404(int(formChange.category.data))
+            category = db.session.get(Category,int(formChange.category.data))
             post.category = category
             selected_tags = formChange.tag.data
             for tag_id in selected_tags:
@@ -113,12 +113,12 @@ def category():
         name = form.name.data.strip()
         existing_category = Category.query.filter_by(name=name).first()
         if existing_category:
-            flash(f"Категорія '{name}' вже існує.", "error")
+            flash(f"Категорія {name} вже існує.", "error")
         else:
             new_category = Category(name=form.name.data)
             db.session.add(new_category)
             db.session.commit()
-            flash(f"Категорія '{name}' додана.", "successs")
+            flash(f"Категорія {name} додана.", "successs")
             return redirect(url_for("post.category"))
         
     return render_template("categories.html", active="Пости", title="Категорії", categories=categories, form=form)
@@ -126,22 +126,22 @@ def category():
 @bp.route("/<int:category_id>/category/delete", methods=["GET", "POST"])
 @login_required
 def delete_category(category_id):
-    category = Category.query.get_or_404(category_id)
+    category = db.session.get(Category,category_id)
     db.session.delete(category)
     db.session.commit()
-    flash(f"Категорія '{category.name}' успішно видалена", "successs")
+    flash(f"Категорія {category.name} успішно видалена", "successs")
     return redirect(url_for("post.category"))
 
 @bp.route("/<int:category_id>/category/change", methods=["GET", "POST"])
 @login_required
 def change_category(category_id):
     form = categoryFormChange()
-    category = Category.query.get_or_404(category_id)
+    category = db.session.get(Category,category_id)
     if form.validate_on_submit():
         name = form.name.data.strip()
         existing_category = Category.query.filter_by(name=name).first()
         if existing_category:
-            flash(f"Категорія '{name}' вже існує.", "error")
+            flash(f"Категорія {name} вже існує.", "error")
             return redirect(url_for("post.category"))
         else:
             category.name = form.name.data
@@ -151,6 +151,7 @@ def change_category(category_id):
     return render_template("changecategory.html",active="Пости",title="Редагування категорії",form=form,categoryid=category_id,name=category.name)
 
 @bp.route('/tag/', methods=["GET", "POST"])
+@login_required
 def tag():
     form = tagForm()
     tags = db.session.query(Tag).all()

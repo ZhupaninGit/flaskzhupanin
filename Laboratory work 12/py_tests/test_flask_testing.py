@@ -1,10 +1,6 @@
-import urllib
 import unittest
-from flask import Flask, url_for,current_app,flash
-from flask_login import current_user
-from flask_testing import TestCase
+from flask import current_app
 from app import create_app
-from urllib.request import urlopen
 from app import db,bcrypt
 from app.models import User
 from app.todo.model import Todo
