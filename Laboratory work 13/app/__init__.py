@@ -36,5 +36,7 @@ def create_app(config_class=config["dev"]):
     app.register_blueprint(cookies,url_prefix="/cookies")
     from app.post import bp as post
     app.register_blueprint(post,url_prefix="/post")
+    from app.api_todo import api_bp as api
+    app.register_blueprint(api)
 
     return app
