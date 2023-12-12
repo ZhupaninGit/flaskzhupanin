@@ -1,20 +1,17 @@
 # Laboratory work 13
 
 ### Screenshots
-#### POST new todo
-![Account page](screenshot/post(create%20new%20todo).png)
-#### GET all todos
-![Account page](screenshot/get(get%20all%20todos).png)
-#### GET todos = 2
-![Account page](screenshot/get(get%20todo%20with%20id%202).png)
-#### PUT todos = 2
-![Account page](screenshot/put(update%202%20todo).png)
-#### GET todos = 2 after PUT
-![Account page](screenshot/get(get%202%20todo%20after%20changing).png)
-#### DELETE todos = 2
-![Account page](screenshot/delete(delete%20todo%20with%20id%202).png)
-#### GET todos = 2 after DELETE
-![Account page](screenshot/get(get%202%20todo%20after%20deleting).png)
+#### Try to get token with uncorrect login data
+![Account page](screenshot/try%20to%20login%20to%20get%20token,uncorrect%20login%20data.png)
+#### Try to get token with correct login data
+![Account page](screenshot/try%20to%20login%20to%20get%20token,correct%20login%20data.png)
+#### Access with uncorrect token
+![Account page](screenshot/access%20with%20uncorrect%20token.png)
+#### Access with expired token
+![Account page](screenshot/access%20with%20expired%20token.png)
+#### Access with correct token
+![Account page](screenshot/access%20with%20correct%20token.png)
+
 
 
 
