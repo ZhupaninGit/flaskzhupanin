@@ -36,8 +36,7 @@ def register():
         return redirect(url_for("auth.account"))
     form = RegistrationForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
-        newuser = User(username=form.username.data,email=form.email.data,password=hashed_password)
+        newuser = User(username=form.username.data,email=form.email.data,password=form.password.data)
         db.session.add(newuser)
         db.session.commit()
         flash(f"Користувач {form.username.data} успішно створений!Тепер Ви можете увійти в свій аккаунт.",category="successs")

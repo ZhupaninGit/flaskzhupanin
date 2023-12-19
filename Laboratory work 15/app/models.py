@@ -1,4 +1,4 @@
-from app import db,login_manager
+from app import db,login_manager,bcrypt
 from flask_login import UserMixin
 import datetime
 import enum
@@ -11,10 +11,15 @@ class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100),unique=True,nullable=False)
     email = db.Column(db.String(100),unique=True,nullable=False)
-    password = db.Column(db.String(255),nullable=False)
     about_me = db.Column(db.String(255)) 
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     image = db.Column(db.String(100),default="default.jpg")
+    password = db.Column(db.String(255), nullable=False)
+
+    def __init__(self,username,email,password):
+        self.username = username
+        self.email = email
+        self.password = bcrypt.generate_password_hash(password)
 
 class EnumPost(enum.Enum):
     news = "News"

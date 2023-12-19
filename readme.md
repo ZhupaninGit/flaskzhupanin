@@ -1,17 +1,20 @@
-# Laboratory work 13
+# Laboratory work 15
 
 ### Screenshots
-#### Try to get token with uncorrect login data
-![Account page](screenshot/try%20to%20login%20to%20get%20token,uncorrect%20login%20data.png)
-#### Try to get token with correct login data
-![Account page](screenshot/try%20to%20login%20to%20get%20token,correct%20login%20data.png)
-#### Access with uncorrect token
-![Account page](screenshot/access%20with%20uncorrect%20token.png)
-#### Access with expired token
-![Account page](screenshot/access%20with%20expired%20token.png)
-#### Access with correct token
-![Account page](screenshot/access%20with%20correct%20token.png)
-
-
-
+#### Get all users
+![Account page](screenshot/get%20all%20users.png)
+#### Get user with id 2
+![Account page](screenshot/get%20user.id==2.png)
+#### Delete user with id 2
+![Account page](screenshot/delete%20user.id==2.png)
+#### Post user with uncorrect data
+![Account page](screenshot/post%20user,incorrect%20data.png)
+#### Post user with correct data
+![Account page](screenshot/post%20user.png)
+#### Put user with id 14
+![Account page](screenshot/put%20user==14.png)
+#### Swagger preview
+![Account page](screenshot/swagger.png)
+#### Swagger show
+![Account page](screenshot/swagger%20show.png)
 
