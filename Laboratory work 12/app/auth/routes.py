@@ -6,7 +6,7 @@ from app.models import User
 from app import db
 from datetime import datetime
 from app import bcrypt
-from .photo import delete_photo,save_photo
+from app.post.photo import delete_photo,save_photo
 
 @bp.route('/login/', methods=['POST', 'GET'])
 def login():

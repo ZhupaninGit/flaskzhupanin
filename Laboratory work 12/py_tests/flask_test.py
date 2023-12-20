@@ -1,6 +1,7 @@
 from app import db
 from app.models import User,Category,Post
 from flask_login import current_user
+
 def test_posts_page_view(client):
     response = client.get('/post/', follow_redirects=True)
     assert response.status_code == 200

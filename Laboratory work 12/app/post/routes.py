@@ -3,7 +3,7 @@ from flask import render_template,redirect,url_for,flash,request
 from .form import postForm,changePostForm,categoryForm,categoryFormChange,tagForm,changeTag
 from app.models import Post,EnumPost,Category,Tag
 from app import db
-from .photo import save_photo,delete_photo
+from app.post.photo import save_photo,delete_photo
 from flask_login import current_user,login_required
 from sqlalchemy import desc
 

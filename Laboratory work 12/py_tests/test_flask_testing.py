@@ -122,6 +122,17 @@ class TestWebApp(unittest.TestCase):
         assert response.status_code == 200
         assert b"feedback" in response.data
 
+
+    def test_feedback_add(self):
+        response = self.client.post('/feedbacks/add_feedback/', data={
+            'name': 'Some Name',
+            'email': 'username@example.com',
+            'message': "some message"
+        }, follow_redirects=True)
+        assert response.status_code == 200
+        assert "Відгук було успішно додано" in response.text
+
+
     def test_post_page_view(self):
         """
         Тест перегляду сторінки постів:
@@ -174,6 +185,7 @@ class TestWebApp(unittest.TestCase):
         assert response.request.path == '/account/'
 
 
+
     def test_register_and_authenthification(self):
         """
         Тест реєстрації та автентифікації користувача:
@@ -200,6 +212,14 @@ class TestWebApp(unittest.TestCase):
         html = response.get_data(as_text=True)
         assert response.request.path == '/account/'
         assert 'New Username' in html
+
+    def test_login_page_already_logined(self):
+
+        self.login_to_test_account()
+        response = self.client.get('/login/', follow_redirects=True)
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'Ви вже ввійшли в свій аккаунт.' in html
 
     def test_register_user_mismatched_passwords(self):
         """
@@ -230,6 +250,46 @@ class TestWebApp(unittest.TestCase):
         html = response.get_data(as_text=True)
         assert 'Ви успішно вийшли з власного аккаунту' in html
 
+    def test_user_password_change(self):
+
+        self.login_to_test_account()
+        response = self.client.post('/changepassword/', data={
+                'oldpassword': 'password',
+                'newpassword': 'newpasswo',
+                'newpasswordrepeat': 'newpasswo'
+
+            }, follow_redirects=True)
+        assert response.status_code == 200
+        
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Пароль успішно змінено' in html
+
+
+    def test_user_password_incorrect_change(self):
+
+        self.login_to_test_account()
+        response = self.client.post('/changepassword/', data={
+                'oldpassword': 'passwordd',
+                'newpassword': 'newpasswo',
+                'newpasswordrepeat': 'newpasswo'
+
+            }, follow_redirects=True)
+        assert response.status_code == 200
+        
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Старий пароль неправильний' in html
+
+    def test_allusers_page(self):
+
+        self.login_to_test_account()
+        response = self.client.get('/allusers/')
+        assert response.status_code == 200
+        
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Всі користувачі' in html
 
     def test_account_info_change(self):
         """
@@ -299,7 +359,72 @@ class TestWebApp(unittest.TestCase):
         delete_do = db.session.get(Todo, 1)
         assert delete_do == None
 
+    def test_infos_route_template_render(self):
+        response = self.client.get('cookies/infos', follow_redirects=True)
+        print(response.text)
+        assert "Щоб побачити цю сторінку" in response.text
+        assert response.status_code == 200
 
+    def test_infos_route_template_render(self):
+        self.login_to_test_account()
+        response = self.client.get('cookies/infos', follow_redirects=True)
+        print(response.text)
+        assert "Додати кукі" in response.text
+        assert response.status_code == 200
+
+    def test_cookie_creating_cor(self):
+        self.login_to_test_account()
+
+        response = self.client.post('/cookies/add_cookie/', data={
+                'cookie_key': 'Key',
+                'cookie_value': 'Value'
+            }, follow_redirects=True)
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Кукі успішно додані' in html
+
+
+    def test_cookie_creating_uncorrect(self):
+        self.login_to_test_account()
+
+        response = self.client.post('/cookies/add_cookie/', data={
+                'cookie_key': '',
+                'cookie_value': ''
+            }, follow_redirects=True)
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Кукі не були додані,заповніть всі поля' in html
+
+    def test_cookie_deleting(self):
+        self.login_to_test_account()
+
+        response = self.client.post('/cookies/add_cookie/', data={
+                'cookie_key': 'Key',
+                'cookie_value': 'Value'
+            }, follow_redirects=True)
+        
+        response = self.client.get('/cookies/deletecookie/Key', follow_redirects=True)
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Вибраний кукі успішно видалений' in html
+
+   
+    def test_cookie_all_deleting(self):
+        self.login_to_test_account()
+
+        response = self.client.post('/cookies/add_cookie/', data={
+                'cookie_key': 'Key',
+                'cookie_value': 'Value'
+            }, follow_redirects=True)
+        
+        response = self.client.get('/cookies/deleteallcookies', follow_redirects=True)
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        print(html)
+        assert 'Вcі кукі були видалені' in html
 
 if __name__ == '__main__':
     unittest.main()

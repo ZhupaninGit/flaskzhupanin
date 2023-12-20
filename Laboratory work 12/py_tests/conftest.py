@@ -27,3 +27,4 @@ def login_test_user(client):
 
         yield
         client.get("/logout/")
+
