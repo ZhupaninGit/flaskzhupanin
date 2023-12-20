@@ -2,7 +2,7 @@ from app.main import bp
 from flask import render_template
 
 
-my_skills = ["Network Basic","C++ Basic","Dart\Flutter Basic","Operation System","Python Basic","Java Basic"]
+my_skills = ["Network Basic", "C++ Basic", r"Dart\Flutter Basic", "Operation System", "Python Basic", "Java Basic"]
 
 
 @bp.route('/')

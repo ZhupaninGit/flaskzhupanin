@@ -2,5 +2,6 @@
 
 #### Screenshots
 #### Tests result
-![Account page](https://github.com/ZhupaninGit/flaskzhupanin/blob/lab12/screenshot/1.png)
-
+![Account page](screenshot/1.png)
+#### Coverage test result
+![Account page](screenshot/2.png)
