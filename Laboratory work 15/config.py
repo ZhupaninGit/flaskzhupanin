@@ -18,9 +18,9 @@ class DevConfig(Config):
 
 
 class ProdConfig(Config):
-    DEVELOPMENT = True
+    DEVELOPMENT = False
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = databaseurl
+    SECRET_KEY = f"anysecretkey"
 
 
 class TestConfig(Config):
