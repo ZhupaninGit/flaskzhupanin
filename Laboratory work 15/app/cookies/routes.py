@@ -1,7 +1,7 @@
 from app.cookies import bp
 from flask_login import login_required,current_user
 from flask import redirect,request,url_for,make_response,flash,render_template
-
+import re
 
 @bp.route('/infos/')
 @login_required
@@ -18,7 +18,9 @@ def infos():
 def add_cookie():
     cookie_key = request.form['cookie_key']
     cookie_value = request.form['cookie_value']
-
+    if not re.match("^[a-zA-Z]+$", cookie_key) or not re.match("^[a-zA-Z]+$", cookie_value):
+        flash("Значення повинні містити лише латинські символи.", "error")
+        return redirect(url_for('cookies.infos'))
     if len(cookie_value) == 0 or len(cookie_key) == 0:
         flash("Кукі не були додані,заповніть всі поля.","error")
         response = make_response(redirect(url_for('cookies.infos')))
@@ -45,10 +47,10 @@ def deletecookie(key=None):
 @bp.route('/deleteallcookies/',methods=["POST","GET"])
 @login_required
 def deleteallcookies():
-        flash("Вcі кукі були видалені.","successs")
         response = make_response(redirect(url_for('cookies.infos')))
         cookies = request.cookies
         for key in cookies.keys():
             if key != 'session':
                 response.delete_cookie(key)
+        flash("Вcі кукі були видалені.","successs")
         return response
