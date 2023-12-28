@@ -20,7 +20,6 @@ class DevConfig(Config):
 class ProdConfig(Config):
     DEVELOPMENT = False
     DEBUG = False
-    SECRET_KEY = f"anysecretkey"
 
 
 class TestConfig(Config):
