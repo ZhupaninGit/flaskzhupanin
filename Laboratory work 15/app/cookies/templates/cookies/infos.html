@@ -1,0 +1,58 @@
+{% from "render_field.html" import render_field %}
+
+{%extends "index.html" %}
+{%block content%}
+<center>
+  <section>
+    <h2 style="margin-top: 15px;">Привіт , <span class=success>{{username}}</span>.</h2>
+    <div class="useremail">{{current_user.email}}</div>
+    <hr class="my-4">
+  </section>
+    <h3>Додавання кукі</h3>
+    <div style="max-width: 100vh;">
+      <form action="{{url_for('cookies.add_cookie')}}" method="post" class="addcookie">
+        <label for="cookie_key">Ключ:</label><br>
+        <input type="text" id="cookie_key" name="cookie_key" class="form-control form-control-lg"><br>
+        <label for="cookie_value">Значення:</label><br>
+        <input type="text" id="cookie_value" name="cookie_value" class="form-control form-control-lg"><br>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Додати кукі</button>
+    </form>
+    </div>
+
+    <hr class="my-4">
+    <h3>Наявні cookie</h3>
+    <table class="table table-bordered" style="max-width: 100vh;">
+        <thead>
+          <tr>
+            <th scope="col">Ключ (key)</th>
+            <th scope="col">Значення (value)</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for key, value in cookies.items() %}
+          <tr>
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+            {% if key=="session" %}
+            <td> </td>
+            {% else %}
+            <td>
+                <form action="{{url_for('cookies.deletecookie', key=key)}}" method="post">
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Видалити</button>
+                </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form action="{{url_for('cookies.deleteallcookies')}}" method="post">
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Видалити всі cookies</button>
+    </form>
+
+
+    <hr>
+</center>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% from "render_field.html" import render_field %}
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+            <center>
+              <h4 class="text-center my-3 pb-3">Категорії</h4>
+              {% if current_user.is_authenticated %}
+              <a class="btn btn-primary btn-lg btn-block" href="{{url_for('post.tag')}}">Перегляд тегів</a>
+              {% endif %}
+            </center>
+            <table class="table mb-4">
+              <thead>
+                  <tr>
+                    <th scope="col">Категорія</th>
+                    <th scope="col">Дії</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for category in categories %}
+                  <tr>
+                    <td>{{ category.name }}</td>
+                    <td>
+                      {% if current_user.is_authenticated %}
+                      <a class="btn btn-danger ms-1" href="{{ url_for('post.delete_category', category_id=category.id) }}">Видалити</a>
+                      <a class="btn btn-success" href="{{ url_for('post.change_category', category_id=category.id) }}">Змінити</a>
+                      {% endif %}
+                      <a class="btn btn-primary btn-lg btn-block" href="{{ url_for('post.posts_in_category', category_id=category.id) }}">Всі пости цієї категорії</a>
+                    </td>
+                    
+                  </tr>
+                  {% endfor %}
+        
+      
+              </tbody>
+          </table>
+            {% if current_user.is_authenticated %}
+            <center>
+            <h5>Бажаєте додати нову категорію?</h5>
+            <form method="post" action="{{url_for('post.category')}}" novalidate>
+                {{ form.csrf_token }}
+                {{render_field(form.name)}}
+               {{form.submit(class="btn btn-primary btn-lg btn-block",style="margin-top:20px;") }} 
+              </form>
+            {% endif %}
+          </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

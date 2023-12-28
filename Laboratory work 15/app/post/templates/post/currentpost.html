@@ -1,0 +1,75 @@
+{% from "render_field.html" import render_field %}
+
+
+{%extends "index.html" %}
+{%block content%}
+<section   style="min-height: 100vh; background-color: #fca950 !important;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-left h-100">
+        <div class="col col-lg-9 col-xl-7">
+          <div class="card rounded-3">
+            <div class="card-body p-4">
+            <center>
+                <div class="posttitle">
+                    {{currentPost.title}}
+                </div>
+            </center>
+            {% if currentPost.user_id == current_user.id %}
+                Ви є автором цього посту.
+                <form id="deleteForm" action="{{ url_for('post.delete_post', post_id=currentPost.id) }}" method="post">
+                    <button id="deleteButton" type="submit" class="btn btn-danger">❌ Видалити цей пост</button>
+                </form>
+                <script>
+                    document.getElementById('deleteForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                            if (confirm('Ви впевнені, що хочете видалити цей пост?')) {
+                            this.submit();
+                        }
+                    });
+                </script>
+                <a class="btn btn-success" href="{{ url_for('post.update_post', post_id=currentPost.id) }}">✏ Змінити пост</a>
+
+                
+              {% endif %}
+
+                <div class="posttime">
+                  {{currentPost.created.replace(microsecond=0)}}
+                </div>
+                <div>
+                  {% if currentPost.type == EnumPost.other %}
+                  ✅ Інше
+                  {% elif currentPost.type == EnumPost.news %}
+                  📰 Новини
+                  {% elif currentPost.type == EnumPost.events %}
+                  🎆 Події
+                  {% else %}
+                  🤳 Блог
+                  {% endif %}
+                  <br>
+                  Категорія : {{category.name}}<br>
+                  {% if currentPost.tags|length != 0 %}
+                    Теги :
+                    {% for tag in currentPost.tags %}
+                      #{{tag.name}}
+                    {% endfor %}
+                  {%endif%}
+                </div>
+                <hr>
+                <div class="posttext">
+                  {{currentPost.text}}
+                </div>
+                <div>
+                  <center>
+                    <img  style="margin-top:10px; width: 90vh;height: 70vh;" src="{{url_for('static',filename='post_pics/' + currentPost.image)}}">
+                  </center>
+                </div>
+
+            
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
